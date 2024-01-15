@@ -16,4 +16,9 @@ class LS extends AbstractCommand
             ],
         ];
     }
+    public function run(array $userParameters)
+    {
+        $directory = $userParameters["directory"];
+        $result = scandir($directory);
+    }
 }
