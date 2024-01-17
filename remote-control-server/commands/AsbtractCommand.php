@@ -18,16 +18,41 @@ abstract class AbstractCommand
         array $parameterProperties,
         array $userParameters
     ): mixed {
-        if (!isset($userParameters[$parameterName])) {
+        if (
+            isset($parameterProperties["required"]) &&
+            $parameterProperties["required"] &&
+            !isset($userParameters[$parameterName])
+        ) {
             throw new UnexpectedValueException();
             //TODO regler execption
         }
-        //TODO finir code
+        $userParameter = $userParameters[$parameterName];
+        if (
+            !isset($parameterProperties["type"])
+        ) {
+            throw new UnexpectedValueException();
+            //TODO regler execption
+        }
+        $expectedType = $parameterProperties["type"];
+        if (
+            !isset($expectedType->value)
+        ) {
+            throw new UnexpectedValueException();
+            //TODO regler execption
+        }
+        $expectedTypeValue = $expectedType->value;
+        if (gettype($userParameter) !== $expectedTypeValue) {
+            throw new UnexpectedValueException();
+            //TODO regler execption
+        }
+        return $userParameter;
     }
-    final protected function checkUserParameters(array $userParameters): bool
+    final protected function checkUserParameters(array $userParameters): array
     {
         foreach ($this->getParameters() as $parameterName => $parameterProperties) {
+            self::checkUserParameter($parameterName, $parameterProperties, $userParameters);
         }
+        return $userParameters;
     }
     final public function getName(): string
     {
