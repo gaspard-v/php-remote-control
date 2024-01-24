@@ -2,7 +2,10 @@
 
 namespace Commands\Abstract;
 
+use TypeError;
 use UnexpectedValueException;
+use Commands\Exceptions;
+use ValueError;
 
 abstract class AbstractCommand
 {
@@ -23,27 +26,28 @@ abstract class AbstractCommand
             $parameterProperties["required"] &&
             !isset($userParameters[$parameterName])
         ) {
-            throw new UnexpectedValueException();
-            //TODO regler execption
+            throw new Exceptions\MissingRequiredParameter($parameterName);
         }
         $userParameter = $userParameters[$parameterName];
         if (
             !isset($parameterProperties["type"])
         ) {
-            throw new UnexpectedValueException();
-            //TODO regler execption
+            throw new ValueError("Parameter {$parameterName} properties 
+            does not have the required \"type\" property.");
         }
         $expectedType = $parameterProperties["type"];
         if (
             !isset($expectedType->value)
         ) {
-            throw new UnexpectedValueException();
-            //TODO regler execption
+            throw new ValueError("Parameter {$parameterName} type property 
+            does not have the required \"value\" member. Check if the type property 
+            type is from the enum Typing");
         }
         $expectedTypeValue = $expectedType->value;
-        if (gettype($userParameter) !== $expectedTypeValue) {
-            throw new UnexpectedValueException();
-            //TODO regler execption
+        $userTypeValue = gettype($userParameter);
+        if ($userTypeValue !== $expectedTypeValue) {
+            throw new \InvalidArgumentException("parameter \"{$parameterName}\" type is {$userTypeValue}
+            but the expected parameter type is {$expectedTypeValue}.");
         }
         return $userParameter;
     }

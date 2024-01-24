@@ -7,6 +7,9 @@ use Typing;
 
 class LsCommand extends AbstractCommand
 {
+    public function __construct()
+    {
+    }
     public function getParameters(): ?array
     {
         return [
@@ -19,6 +22,6 @@ class LsCommand extends AbstractCommand
     public function run(array $userParameters)
     {
         $directory = $userParameters["directory"];
-        $result = scandir($directory);
+        $this->result = scandir($directory);
     }
 }
