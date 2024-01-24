@@ -2,8 +2,6 @@
 
 namespace Commands\Abstract;
 
-use TypeError;
-use UnexpectedValueException;
 use Commands\Exceptions;
 use ValueError;
 
@@ -15,7 +13,13 @@ abstract class AbstractCommand
     protected ?int $exitCode;
     abstract public function __construct();
     abstract public function getParameters(): ?array;
-    abstract public function run(array $userParameters): mixed;
+    abstract protected function run(array $userParameters): mixed;
+
+    final public function execute(array $userParameters): mixed
+    {
+        $this->checkUserParameters($userParameters);
+        return $this->run($userParameters);
+    }
     final static protected function checkUserParameter(
         string $parameterName,
         array $parameterProperties,
@@ -51,12 +55,22 @@ abstract class AbstractCommand
         }
         return $userParameter;
     }
+
     final protected function checkUserParameters(array $userParameters): array
     {
         foreach ($this->getParameters() as $parameterName => $parameterProperties) {
             self::checkUserParameter($parameterName, $parameterProperties, $userParameters);
         }
         return $userParameters;
+    }
+    final protected function runErrorOnFalse(callable $runFunction, ...$parameters): mixed
+    {
+        $result = $runFunction(...$parameters);
+        if ($result === false) {
+            $lastError = error_get_last();
+            throw new \RuntimeException($lastError["message"]);
+        }
+        return $result;
     }
     final public function getName(): string
     {

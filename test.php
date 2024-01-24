@@ -1,10 +1,5 @@
 <?php
-
-$oof = ["oui" => "loo"];
-try {
-    echo $oof["fefe"];
-} catch (Error $e) {
-    echo "kefke";
-}
-
-echo "oui";
+require_once(__DIR__ . DIRECTORY_SEPARATOR . "remote-control-server" . DIRECTORY_SEPARATOR . "autoloader.php");
+$command = new Commands\LsCommand();
+$result = $command->execute(["directory" => "."]);
+print_r($result);

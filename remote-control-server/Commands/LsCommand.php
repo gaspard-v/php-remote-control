@@ -9,6 +9,8 @@ class LsCommand extends AbstractCommand
 {
     public function __construct()
     {
+        $this->name = "ls";
+        $this->description = "List all files and directory from the current directory.";
     }
     public function getParameters(): ?array
     {
@@ -19,9 +21,10 @@ class LsCommand extends AbstractCommand
             ],
         ];
     }
-    public function run(array $userParameters)
+    protected function run(array $userParameters): array
     {
         $directory = $userParameters["directory"];
-        $this->result = scandir($directory);
+        $this->result = $this->runErrorOnFalse("scandir", $directory);
+        return $this->result;
     }
 }
