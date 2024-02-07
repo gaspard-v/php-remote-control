@@ -9,8 +9,8 @@ use Commands\Traits;
 abstract class AbstractCommand
 {
     use Traits\Parameters;
-    protected string $name;
-    protected string $description;
+    public static string $name;
+    public static string $description;
     protected mixed $result;
     protected ?int $exitCode;
     abstract public function __construct();
@@ -20,7 +20,8 @@ abstract class AbstractCommand
     final public function execute(array $userParameters): mixed
     {
         $this->checkUserParameters($userParameters);
-        return $this->run($userParameters);
+        $this->result = $this->run($userParameters);
+        return $this->result;
     }
     final protected function runErrorOnFalse(callable $runFunction, ...$parameters): mixed
     {
@@ -30,14 +31,6 @@ abstract class AbstractCommand
             throw new \RuntimeException($lastError["message"]);
         }
         return $result;
-    }
-    final public function getName(): string
-    {
-        return $this->name;
-    }
-    final public function getDescription(): string
-    {
-        return $this->description;
     }
     final public function getResult(): mixed
     {
